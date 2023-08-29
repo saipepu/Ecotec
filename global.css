@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&display=swap');
+
+
+::root {
+  --display: M-PLUS-Rounded-1c, sans-serif
+  --primary: #33A798
+}
