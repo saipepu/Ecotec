@@ -12,7 +12,8 @@ import AppStateContext from '../hook/AppStateContext'
 
 const Restaurants = ({ navigation }) => {
 
-  const [searchValue, setSearchValue] = useState('')
+  const [text, onChangeText] = useState('')
+  console.log(text)
   const context = useContext(AppStateContext)
 
   let trendingMenu = [
@@ -22,7 +23,7 @@ const Restaurants = ({ navigation }) => {
       price: 10,
       point: 25,
       image: t_menu1
-    },
+    }, // asdfasdfasdf
     {
       name: 'Sweetgreen',
       ingredients: ['apple','potato','salad'],
@@ -78,13 +79,13 @@ const Restaurants = ({ navigation }) => {
 
   const Header = () => {
     return (
-      <View style={{ width: '100%', display: 'flex', gap: 8}}>
+      <View style={{ width: '100%', display: 'flex', gap: 8}} onClick={() => console.log(text)}>
         <View>
           <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Plant-Powered</Text>
           <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Nourish Restaurants</Text>
         </View>
         <View style={{ width: '100%' }}>
-          <TextInput value={searchValue} onChangeText={newValue => setSearchValue(newValue)} style={{ width: '100%', fontSize: 18, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} placeholder='Search'/>
+          <TextInput onChangeText={onChangeText} value={text}  style={{ width: '100%', fontSize: 18, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} placeholder='Search'/>
         </View>
       </View>
     )
@@ -95,7 +96,7 @@ const Restaurants = ({ navigation }) => {
     const renderItem = ({ item }) => {
       return (
         <TouchableOpacity
-          style={{ width: 130, borderRadius: 12, borderColor: color.dark, borderWidth: 1, display: 'flex', alignItems: 'center' }}
+          style={{ width: 130, borderRadius: 12, borderColor: '#cbcbcb', borderWidth: 1, display: 'flex', alignItems: 'center' }}
         >
           <View style={{ width: '100%', height: 75, paddingBottom: 8 }}>
             <Image source={item.image} style={{ width: '100%', height: '100%', resizeMode: 'contain'}}/>
@@ -116,7 +117,7 @@ const Restaurants = ({ navigation }) => {
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> ///a asdfasdfa
       )
     }
 
@@ -214,7 +215,16 @@ const Restaurants = ({ navigation }) => {
       <HeaderNav backTo={'Home'} navigation={navigation}/>
       <ScrollView
         vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 20, paddingHorizontal: 20 }}>
-        <Header />
+        {/* <Header /> */}
+        <View style={{ width: '100%', display: 'flex', gap: 8}} onClick={() => console.log(text)}>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Plant-Powered</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Nourish Restaurants</Text>
+          </View>
+          <View style={{ width: '100%' }}>
+            <TextInput onChangeText={onChangeText} value={text}  style={{ width: '100%', fontSize: 18, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} placeholder='Search'/>
+          </View>
+        </View>
         <Trendings />
         <Categories />
         <PopularRestaurants />

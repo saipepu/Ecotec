@@ -29,7 +29,7 @@ const Welcome = ({ navigation }) => {
         <Text style={styles.title}>Ecotec</Text>
         <Text style={styles.subtitle}>Spark Change: Embrace Sustainability for a Greener Future!</Text>
       </View>
-      <PrimaryButton navigation={navigation} props={'Home'} text={'Get Started'} />
+      <PrimaryButton navigation={navigation} props={'SignUp'} text={'Get Started'} />
     </View>
     </>
   )

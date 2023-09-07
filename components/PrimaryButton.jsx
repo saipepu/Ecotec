@@ -7,7 +7,7 @@ const PrimaryButton = ({ navigation, props, text, styleConfig }) => {
   return (
     <TouchableOpacity
       style={{ ...styles.button, ...styleConfig}}
-      onPress={() => navigation.navigate(props)}
+      onPress={() => props ? navigation.navigate(props) : ""}
     >
       <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>{text}</Text>
     </TouchableOpacity>

@@ -34,7 +34,7 @@ const ChiefProfile = ({ navigation }) => {
               </View>
             </View>
             <View style={{ display: 'flex' }}>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>Joe Merlin</Text>
+              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>Example Chef</Text>
               <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20}}>
                 <Text style={{ fontSize: 16, color: color.black }}>20 Follwers</Text>
                 <Text style={{ fontSize: 16, color: color.black }}>10 Following</Text>
@@ -82,7 +82,7 @@ const ChiefProfile = ({ navigation }) => {
 
           <Restaurant />
       </ScrollView>
-      <FooterNav navigation={navigation}/>
+      <FooterNav navigation={navigation} chef={true} profile={true} />
 
     </View>
   )
