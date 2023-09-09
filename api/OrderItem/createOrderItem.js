@@ -1,19 +1,17 @@
 import { API } from "../api";
-import AppStateContext from "../../hook/AppStateContext";
-import { useContext } from "react";
 
-const context = useContext(AppStateContext)
+exports.createOrderItem = async(item_orders) => {
 
-exports.createOrderItem = async() => {
-
+  console.log(item_orders)
   return await fetch(`${API}/order_item/create`, {
     method: "POST",
     headers: {
       Accept: 'application/json',
       "Content-Type": 'application/json'
     },
-    body: JSON.stringify()
+    body: JSON.stringify(item_orders)
   })
   .then(res => res.json())
   .catch(err => err)
+  
 }

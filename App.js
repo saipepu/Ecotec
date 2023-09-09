@@ -1,13 +1,13 @@
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import color from './theme/colors';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import color from './theme/colors';
 import Welcome from './Page/Welcome';
 import Home from './Page/Home';
-import { createStackNavigator } from '@react-navigation/stack';
 import Restaurants from './Page/Restaurants';
 import RestaurantMenu from './Page/RestaurantMenu';
 import Cart from './Page/Cart';
-import { useState } from 'react';
 import AppStateContext from './hook/AppStateContext';
 import ChiefProfile from './Page/ChiefProfile';
 import CreateMenu from './Page/FormPage/CreateMenu';
@@ -20,6 +20,7 @@ export default function App() {
   const [contextRestaurant, setContextRestaurant] = useState({})
   const [contextCurrentTab, setContextCurrentTab] = useState('Home')
   const [contextCart, setContextCart] = useState({})
+  const [contextCurrentUser, setContextCurrentUser] = useState()
 
   const updateContextRestaurant = r => {
     setContextRestaurant(r)
@@ -34,7 +35,9 @@ export default function App() {
     contextCurrentTab: contextCurrentTab,
     updateContextCurrentTab: updateContextCurrentTab,
     contextCart: contextCart,
-    setContextCart: setContextCart
+    setContextCart: setContextCart,
+    contextCurrentUser: contextCurrentUser,
+    setContextCurrentUser: setContextCurrentUser
   }
 
   const Stack = createStackNavigator()

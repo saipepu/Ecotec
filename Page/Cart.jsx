@@ -9,13 +9,15 @@ import t_menu3 from '../assets/trendingMenu/trendingMenu3.png'
 import PrimaryButton from '../components/PrimaryButton'
 import AppStateContext from '../hook/AppStateContext'
 import { createOrder } from '../api/Order/CreateOrder'
+import { createOrderItem } from '../api/OrderItem/createOrderItem'
 
 const Cart = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
-  const {contextCart, setContextCart} = context
+  const {contextCart } = context
   const [total, setTotal] = useState()
   const [point, setPoint] = useState()
+  const { contextCurrentUser } = context
 
   let cartList = []
   let sum = 0
@@ -65,6 +67,7 @@ const Cart = ({ navigation }) => {
     )
   }
 
+  console.log(contextCurrentUser)
   const BillDisplay = () => {
 
     const handleCheckOut = () => {
@@ -75,6 +78,14 @@ const Cart = ({ navigation }) => {
       createOrder({total_amount, total_points})
       .then(data => {
         if(data.success) {
+          createOrderItem(cartList, data.message.id)
+          .then(data => {
+            if(data.success) {
+              console.log(data.message, 'created all items')
+            } else {
+              console.log(data.message, 'error')
+            }
+          })
           console.log('Order Created Successfully')
         } else {
           console.log('Order creation failed')

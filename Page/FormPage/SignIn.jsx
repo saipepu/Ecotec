@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import SignUpPng from '../../assets/SignUp.png'
 import color from '../../theme/colors'
@@ -7,11 +7,14 @@ import userIcon from '../../assets/Icon/user.png'
 import passwordIcon from '../../assets/Icon/password.png'
 import { Link } from '@react-navigation/native'
 import { SignIn as SignInApi } from '../../api/Customer/SignIn'
+import AppStateContext from '../../hook/AppStateContext'
 
 const SignIn = ({ navigation }) => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const context = useContext(AppStateContext)
+  const { setContextCurrentUser } = context
 
   const checkForm = ({email, password}) => {
     if (email != "" && password != "") {
@@ -33,6 +36,7 @@ const SignIn = ({ navigation }) => {
       SignInApi(formData).then(data => {
         if(data?.success) {
           console.log('SignUp Success')
+          setContextCurrentUser(data.message)
           navigation.navigate('Home')
         } else {
           console.log('SignUp Failed', data?.message)
@@ -78,7 +82,7 @@ const SignIn = ({ navigation }) => {
             <TouchableOpacity
               style={{ ...styles.button}}
               onPress={() => {
-                // handleSubmit()
+                handleSubmit()
                 navigation.navigate('Home')
               }}
             >
