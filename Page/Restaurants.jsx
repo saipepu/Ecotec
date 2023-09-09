@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppState, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import HeaderNav from '../components/HeaderNav'
 import t_menu1 from '../assets/trendingMenu/trendingMenu1.png'
@@ -9,11 +9,12 @@ import restaurant2 from '../assets/popularRestaurants/restaurant2.png'
 import color from '../theme/colors'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import AppStateContext from '../hook/AppStateContext'
+import { getAllRestaurants } from '../api/Restaurants/getAllRestaurants'
 
 const Restaurants = ({ navigation }) => {
 
   const [text, onChangeText] = useState('')
-  console.log(text)
+  const [restaurantLists, setRestaurantLists] = useState([])
   const context = useContext(AppStateContext)
 
   let trendingMenu = [
@@ -77,19 +78,14 @@ const Restaurants = ({ navigation }) => {
     }
   ]
 
-  const Header = () => {
-    return (
-      <View style={{ width: '100%', display: 'flex', gap: 8}} onClick={() => console.log(text)}>
-        <View>
-          <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Plant-Powered</Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Nourish Restaurants</Text>
-        </View>
-        <View style={{ width: '100%' }}>
-          <TextInput onChangeText={onChangeText} value={text}  style={{ width: '100%', fontSize: 18, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} placeholder='Search'/>
-        </View>
-      </View>
-    )
-  }
+  useEffect(() => {
+    getAllRestaurants()
+    .then(data => {
+      if(data.success) {
+        setRestaurantLists(data.message)
+      }
+    })
+  }, [])
 
   const Trendings = () => {
 
@@ -181,16 +177,16 @@ const Restaurants = ({ navigation }) => {
             navigation.navigate('RestaurantMenu')
           }}>
           <View style={{ width: '100%', height: 120, display: 'flex' }}>
-            <Image source={restaurant.image} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
+            <Image source={restaurant1} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
           </View>
           <View style={{ width: '100%', display: 'flex', padding: 8}}>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Text style={{ fontSize: 16, fontWeight: '600' }}>{restaurant.name}</Text>
-              <Text style={{ fontSize: 10, color: color.black }}>{restaurant.openingTime}</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600' }}>{restaurant?.name}</Text>
+              <Text style={{ fontSize: 10, color: color.black }}>{restaurant?.schedule}</Text>
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
               <Icon size={14} name="location-on" color={color.primary}/>
-              <Text style={{ fontSize: 10, color: color.black }}>{restaurant.location}</Text>
+              <Text style={{ fontSize: 10, color: color.black }}>{restaurant?.location}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -202,7 +198,7 @@ const Restaurants = ({ navigation }) => {
         <View>
           <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Popular Restarants</Text>
         </View>
-        {popularRestaurants.map((restaurant, i) => (
+        {restaurantLists.map((restaurant, i) => (
           <RenderItem restaurant={restaurant} key={i} />
         )
         )}
@@ -211,10 +207,10 @@ const Restaurants = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ width: '100%', height: '100%', paddingTop: 56 }}>
       <HeaderNav backTo={'Home'} navigation={navigation}/>
       <ScrollView
-        vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 20, paddingHorizontal: 20 }}>
+        vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
         {/* <Header /> */}
         <View style={{ width: '100%', display: 'flex', gap: 8}} onClick={() => console.log(text)}>
           <View>
@@ -225,8 +221,8 @@ const Restaurants = ({ navigation }) => {
             <TextInput onChangeText={onChangeText} value={text}  style={{ width: '100%', fontSize: 18, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} placeholder='Search'/>
           </View>
         </View>
-        <Trendings />
-        <Categories />
+        {/* <Trendings /> */}
+        {/* <Categories /> */}
         <PopularRestaurants />
       </ScrollView>
     </View>
@@ -239,10 +235,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    paddingTop: 56,
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
-    overflow: 'visible'
+    overflow: 'visible',
+    gap: 20,
+    paddingHorizontal: 20
   },
 })

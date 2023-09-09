@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import HeaderNav from '../components/HeaderNav'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -7,12 +7,17 @@ import t_menu1 from '../assets/trendingMenu/trendingMenu1.png'
 import t_menu2 from '../assets/trendingMenu/trendingMenu2.png'
 import t_menu3 from '../assets/trendingMenu/trendingMenu3.png'
 import AppStateContext from '../hook/AppStateContext'
+import { getAllCategory } from '../api/Category/getAllCategory'
+import { getAllMenu } from '../api/Menu/getAllMenu'
+import { getMenuByRestaurant } from '../api/Menu/getMenuByRestaurant'
 
 const RestaurantMenu = ({ navigation }) => {
 
   const [searchValue, setSearchValue] = useState('')
   const context = useContext(AppStateContext)
   const [restaurant, setRestaurant] = useState(context.contextRestaurant)
+  const [categoryList, setCategoryList] = useState([])
+  const [menu, setMenu] = useState([])
 
   let menuCategories = [
     {
@@ -60,6 +65,24 @@ const RestaurantMenu = ({ navigation }) => {
       image: t_menu3
     },
   ]
+
+  useEffect(() => {
+    Promise.all([
+      getAllCategory(), getMenuByRestaurant(restaurant?.id),
+    ])
+    .then(([categoryData, menuData]) => {
+      if(categoryData.success) {
+        setCategoryList(categoryData.message)
+      } else {
+        console.log('fetch category error')
+      }
+      if(menuData.success) {
+        setMenu(menuData.message)
+      } else {
+        console.log('fetch menu error')
+      }
+    })
+  }, [])
   
   const Header = () => {
     return (
@@ -96,7 +119,7 @@ const RestaurantMenu = ({ navigation }) => {
           <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Categories</Text>
         </View>
         <FlatList
-          data={menuCategories}
+          data={categoryList}
           horizontal
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
@@ -110,32 +133,49 @@ const RestaurantMenu = ({ navigation }) => {
 
   const TopChoices = () => {
 
+    console.log(context.contextCart)
+    const {contextCart, setContextCart} = context
+    const addToCart = (menu) => {
+      console.log(menu.id, '139')
+      if(menu.id in contextCart) {
+        contextCart[menu.id].quantity = contextCart[menu.id].quantity + 1
+        setContextCart(contextCart)
+      } else {
+        contextCart[menu.id] = {...menu, quantity: 1}
+        setContextCart(contextCart)
+      }
+      console.log(contextCart)
+    }
+
     const RenderItem = ({ menu }) => {
       return (
         <TouchableOpacity
           style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',borderWidth: 1, borderColor: '#dbdbdb', borderRadius: 15, paddingHorizontal: 12, paddingVertical: 8, gap: 12 }}
         >
           <View style={{ width: 75, height: 75, overflow: 'hidden'}}>
-            <Image source={menu.image} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+            <Image source={t_menu1} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
           </View>
           <View style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignContent: 'flex-start'}}>
             <View style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <View style={{ maxHeight: '80%', gap: 4 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{menu.name}</Text>
-                <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                <Text style={{ maxWidth: '90%', fontSize: 16, fontWeight: 'bold' }}>{menu.name}</Text>
+                {/* <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                   {menu.ingredients.map((item, i) => (
                       <Text key={i} style={{ fontSize: 10, color: color.black, marginRight: 4}}>{item} .</Text>
                     ))}
-                </View>
+                </View> */}
               </View>
               <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 2}}>
-                <Text style={{ fontSize: 16 }}>+{menu.point}</Text>
+                <Text style={{ fontSize: 16 }}>+{menu.points}</Text>
                 <Icon name="stars" size={12} color={color.primary} />
               </View>
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
               <Text style={{ fontSize: 16 }}>{menu.price} Baht</Text>
-              <TouchableOpacity style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: color.primary, paddingHorizontal: 8, paddingVertical: 4, gap: 4}}>
+              <TouchableOpacity
+                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: color.primary, paddingHorizontal: 8, paddingVertical: 4, gap: 4}}
+                onPress={() => addToCart(menu)}
+              >
                 <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>Add</Text>
                 <Icon name="add" size={12} color={'white'} />
               </TouchableOpacity>
@@ -149,7 +189,7 @@ const RestaurantMenu = ({ navigation }) => {
         <View>
           <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Top Choices</Text>
         </View>
-        {trendingMenu.map((menu, i) => (
+        {menu.map((menu, i) => (
           <RenderItem menu={menu} key={i} />
         )
         )}

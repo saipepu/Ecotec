@@ -7,6 +7,7 @@ import userIcon from '../../assets/Icon/user.png'
 import passwordIcon from '../../assets/Icon/password.png'
 import emailIcon from '../../assets/Icon/email.png'
 import { Link } from '@react-navigation/native'
+import { SignUp as SignUpApi } from '../../api/Customer/SignUp'
 
 const SignUp = ({ navigation }) => {
 
@@ -14,13 +15,39 @@ const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const checkForm = ({name, email, password}) => {
+    if (name != "" && email != "" && password != "") {
+      if (password.length < 5) {
+        alert('Password too short! At least 5 Char')
+        return false
+      }
+      return true
+    } else {
+      alert('All Field Are Required!')
+      return false
+    }
+  }
+
   const handleSubmit = () => {
     let formData = {
-      userName: userName,
+      name: userName,
       email: email,
       password: password
     }
-    console.log(formData)
+    if(checkForm(formData)) {
+      console.log('valid')
+      SignUpApi(formData).then(data => {
+        if(data?.success) {
+          console.log('SignUp Success')
+          navigation.navigate('SignIn')
+        } else {
+          console.log('SignUp Failed', data?.message)
+          alert('Wrong Credential!')
+        }
+      })
+    } else {
+      console.log('invalid')
+    }
   }
 
   return (
@@ -69,8 +96,8 @@ const SignUp = ({ navigation }) => {
             <TouchableOpacity
               style={{ ...styles.button}}
               onPress={() => {
-                navigation.navigate('SignIn')
-                handleSubmit()
+                navigation.navigate('Home')
+                // handleSubmit()
               }}
             >
               <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Sign Up</Text>

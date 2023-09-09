@@ -19,6 +19,7 @@ export default function App() {
 
   const [contextRestaurant, setContextRestaurant] = useState({})
   const [contextCurrentTab, setContextCurrentTab] = useState('Home')
+  const [contextCart, setContextCart] = useState({})
 
   const updateContextRestaurant = r => {
     setContextRestaurant(r)
@@ -31,7 +32,9 @@ export default function App() {
     contextRestaurant: contextRestaurant,
     updateContextRestaurant: updateContextRestaurant,
     contextCurrentTab: contextCurrentTab,
-    updateContextCurrentTab: updateContextCurrentTab
+    updateContextCurrentTab: updateContextCurrentTab,
+    contextCart: contextCart,
+    setContextCart: setContextCart
   }
 
   const Stack = createStackNavigator()
