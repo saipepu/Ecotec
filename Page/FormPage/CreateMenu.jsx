@@ -1,38 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import HeaderNav from '../../components/HeaderNav'
 import PrimaryButton from '../../components/PrimaryButton'
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker'
 // import RNFS from 'react-native-fs'
 import * as FileSystem from 'expo-file-system'
+import color from '../../theme/colors';
+import { API } from '../../api/api'
 
 const CreateMenu = ({ navigation }) => {
 
   const Form = () => {
 
       const [image, setImage] = useState()
+      const [serverImage, setServerImage] = useState()
 
       useEffect(() => {
         (async () => {
           const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         })();
       }, [])
-
-      const saveImage = async () => {
-        const imageUri = image; // Replace with the image URL
-        var random_id = Math.round(Math.random() * 1000000)
-        const fileUri = `${FileSystem.documentDirectory}myImage.jpg`;
-        console.log(fileUri)
-        try {
-          const { uri } = await FileSystem.downloadAsync(imageUri, fileUri);
-      
-          console.log('Image downloaded and saved at:', uri);
-        } catch (error) {
-          console.error('Error downloading and saving image:', error);
-        }
-      };
-      
 
       const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -43,10 +31,33 @@ const CreateMenu = ({ navigation }) => {
         })
         if(!result?.canceled) {
           setImage(result.assets[0].uri)
-          saveImage()
         }
       }
       console.log("Image", image)
+
+      const uploadImage = async () => {
+        try {
+          const formData = new FormData();
+          formData.append('image', {
+            uri: image,
+            name: 'vegan_burger.jpg',
+            type: 'image/jpeg'
+          })
+          console.log(formData)
+          const response = await fetch(`${API}/upload`, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            body: formData
+          })
+          .then(data => data.json())
+          .then(result => setServerImage(API+"/"+result?.message))
+        } catch (err) {
+          console.log('Err uploading image: ', err)
+        }
+      }
+      console.log(serverImage, '75')
 
 
       let initialValue = {
@@ -127,7 +138,15 @@ const CreateMenu = ({ navigation }) => {
               <Button title={'Choose'} onPress={() => handleChoosePhoto()} />
             </View>
           </View>
-          <PrimaryButton text={'Create'} styleConfig={{ width: '100%', marginTop: 'auto' }} />
+          <TouchableOpacity
+            style={ styles.button }
+            onPress={() => uploadImage()}
+          >
+            <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Create</Text>
+          </TouchableOpacity>
+          <View style={{ display: 'flex', width: 300, height: 300, backgroundColor: color.black }}>
+            <Image source={{ uri: serverImage }} style={{ width: 50, height: 50 }} />
+          </View>
         </View>
       )
   }
@@ -154,4 +173,14 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     gap: 24,
   },
+  button: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 15,
+    backgroundColor: color.primary,
+    shadowOffset: {width: 0, height: 5},  
+    shadowColor: color.shadowGreen,  
+    shadowOpacity: 1,
+    shadowRadius: 0,
+  }
 })
