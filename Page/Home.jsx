@@ -16,9 +16,15 @@ import outdoors from '../assets/ActivityCategories/outdoors.png'
 import shopping from '../assets/ActivityCategories/shopping.png'
 import transportation from '../assets/ActivityCategories/transportation.png'
 import water from '../assets/ActivityCategories/water.png'
+import AppStateContext from '../hook/AppStateContext'
 
 
 const Home = ({ navigation }) => {
+
+  const context = useContext(AppStateContext)
+  const { contextCurrentUser } = context
+
+  console.log(contextCurrentUser)
 
   const Header = () => {
     return (
@@ -34,8 +40,8 @@ const Home = ({ navigation }) => {
               <Image source={avatar} style={{ width: '100%', height: '100%' }}/>
             </View>
             <View style={{ display: 'flex' }}>
-              <Text style={{ fontSize: 14 }}>Care Giver</Text>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>Joe Merlin</Text>
+              <Text style={{ fontSize: 14 }}>Rank: {contextCurrentUser?.level}</Text>
+              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>{contextCurrentUser?.name}</Text>
             </View>
           </View>
           <TouchableOpacity

@@ -14,19 +14,27 @@ import { createOrderItem } from '../api/OrderItem/createOrderItem'
 const Cart = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
-  const {contextCart } = context
   const [total, setTotal] = useState()
   const [point, setPoint] = useState()
-  const { contextCurrentUser } = context
+  const { contextCurrentUser, contextCart, setContextCart } = context
+  const [loading, setLoading] = useState(false)
+  const [cartList, setCartList] = useState([])
 
-  let cartList = []
   let sum = 0
   let p = 0
-  for(var item in contextCart) {
-    cartList.push(contextCart[item]);
-    sum += contextCart[item].quantity * contextCart[item].price
-    p += contextCart[item].quantity * contextCart[item].points
-  }
+
+  useEffect(() => {
+    console.log('hi')
+    let arr = []
+    for(var item in contextCart) {
+      arr.push(contextCart[item]);
+      sum += contextCart[item].quantity * contextCart[item].price
+      p += contextCart[item].quantity * contextCart[item].points
+    }
+    setCartList(arr)
+  }, [contextCart])
+  console.log(contextCart)
+  console.log(cartList)
   
   useEffect(() => {
     setTotal(sum)
@@ -37,7 +45,7 @@ const Cart = ({ navigation }) => {
     return (
       <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Cart</Text>
-        <Text style={{ fontSize: 16 }}>2 items</Text>
+        <Text style={{ fontSize: 16 }}>{cartList.length} items</Text>
       </View>
     )
   }
@@ -67,18 +75,19 @@ const Cart = ({ navigation }) => {
     )
   }
 
-  console.log(contextCurrentUser)
   const BillDisplay = () => {
 
     const handleCheckOut = () => {
       console.log('Checkout')
       var total_amount = total
       var total_points = point
-      console.log(total_amount, total_points)
-      createOrder({total_amount, total_points})
+      var customer_id = contextCurrentUser.id
+      setLoading(true)
+
+      createOrder({total_amount, total_points, customer_id})
       .then(data => {
         if(data.success) {
-          createOrderItem(cartList, data.message.id)
+          createOrderItem(cartList, data.message.rows[0].id)
           .then(data => {
             if(data.success) {
               console.log(data.message, 'created all items')
@@ -87,29 +96,46 @@ const Cart = ({ navigation }) => {
             }
           })
           console.log('Order Created Successfully')
+          setContextCart({})
+          setTotal(0)
+          setPoint(0)
+          alert('Order Created Successfully. Check Your Profile to Edit Your Order!')
         } else {
+          alert('Order Creating Failed. Please try again!')
           console.log('Order creation failed')
         }
       })
+      .catch(err => err)
+
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
     }
 
     return (
       <View style={{ width: '100%' }}>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: color.black }}>Subtotal</Text>
-          <Text style={{ fontSize: 16, color: color.black }}>{total} Baht</Text>
+      {cartList.length > 0 ? (
+          <>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 16, color: color.black }}>Subtotal</Text>
+              <Text style={{ fontSize: 16, color: color.black }}>{total} Baht</Text>
+            </View>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, marginBottom: 20 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Total</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{total} Baht</Text>
+            </View>
+            <TouchableOpacity
+              style={{ ...styles.button, opacity: loading ? 0.5 : 1 }}
+              onPress={() => handleCheckOut()}
+            >
+              <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>{loading ? "Please Wait" : "Checkout"}</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={{ fontSize: 18, textAlign: 'center' }}>No Item selected</Text>
+        )}
+
         </View>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, marginBottom: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Total</Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{total} Baht</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleCheckOut()}
-        >
-          <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Checkout</Text>
-        </TouchableOpacity>
-      </View>
     )
   }
 

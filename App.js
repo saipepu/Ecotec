@@ -28,7 +28,6 @@ export default function App() {
   const updateContextCurrentTab = r => {
     setContextCurrentTab(r)
   }
-
   const contextValue = {
     contextRestaurant: contextRestaurant,
     updateContextRestaurant: updateContextRestaurant,

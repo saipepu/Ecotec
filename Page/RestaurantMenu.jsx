@@ -133,7 +133,6 @@ const RestaurantMenu = ({ navigation }) => {
 
   const TopChoices = () => {
 
-    console.log(context.contextCart)
     const {contextCart, setContextCart} = context
     const addToCart = (menu) => {
       console.log(menu.id, '139')
@@ -144,7 +143,6 @@ const RestaurantMenu = ({ navigation }) => {
         contextCart[menu.id] = {...menu, quantity: 1}
         setContextCart(contextCart)
       }
-      console.log(contextCart)
     }
 
     const RenderItem = ({ menu }) => {

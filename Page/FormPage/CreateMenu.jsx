@@ -4,6 +4,8 @@ import HeaderNav from '../../components/HeaderNav'
 import PrimaryButton from '../../components/PrimaryButton'
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker'
+// import RNFS from 'react-native-fs'
+import * as FileSystem from 'expo-file-system'
 
 const CreateMenu = ({ navigation }) => {
 
@@ -17,6 +19,21 @@ const CreateMenu = ({ navigation }) => {
         })();
       }, [])
 
+      const saveImage = async () => {
+        const imageUri = image; // Replace with the image URL
+        var random_id = Math.round(Math.random() * 1000000)
+        const fileUri = `${FileSystem.documentDirectory}myImage.jpg`;
+        console.log(fileUri)
+        try {
+          const { uri } = await FileSystem.downloadAsync(imageUri, fileUri);
+      
+          console.log('Image downloaded and saved at:', uri);
+        } catch (error) {
+          console.error('Error downloading and saving image:', error);
+        }
+      };
+      
+
       const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -26,6 +43,7 @@ const CreateMenu = ({ navigation }) => {
         })
         if(!result?.canceled) {
           setImage(result.assets[0].uri)
+          saveImage()
         }
       }
       console.log("Image", image)
@@ -33,8 +51,8 @@ const CreateMenu = ({ navigation }) => {
 
       let initialValue = {
           name: '',
-          price: 0,
-          points: 0,
+          price: '',
+          points: '',
           description: '',
           coverPhoto: ''
       }
