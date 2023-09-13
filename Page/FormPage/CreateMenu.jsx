@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
 import color from '../../theme/colors';
 import { API } from '../../api/api'
+import SelectDropdown from 'react-native-select-dropdown';
+import { getAllCategory } from '../../api/Category/getAllCategory'
 
 const CreateMenu = ({ navigation }) => {
 
@@ -15,11 +17,19 @@ const CreateMenu = ({ navigation }) => {
 
       const [image, setImage] = useState()
       const [serverImage, setServerImage] = useState()
+      const [showAutoComplete, setShowAutoComplete] = useState()
+      const [categoryList, setCategoryList] = useState()
 
       useEffect(() => {
         (async () => {
           const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         })();
+        getAllCategory()
+        .then(data => {
+          if(data.success) {
+            setCategoryList(data.message)
+          }
+        })
       }, [])
 
       const pickImage = async () => {
@@ -33,39 +43,14 @@ const CreateMenu = ({ navigation }) => {
           setImage(result.assets[0].uri)
         }
       }
-      console.log("Image", image)
-
-      const uploadImage = async () => {
-        try {
-          const formData = new FormData();
-          formData.append('image', {
-            uri: image,
-            name: 'vegan_burger.jpg',
-            type: 'image/jpeg'
-          })
-          console.log(formData)
-          const response = await fetch(`${API}/upload`, {
-            method: "POST",
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            },
-            body: formData
-          })
-          .then(data => data.json())
-          .then(result => setServerImage(API+"/"+result?.message))
-        } catch (err) {
-          console.log('Err uploading image: ', err)
-        }
-      }
-      console.log(serverImage, '75')
-
 
       let initialValue = {
           name: '',
           price: '',
           points: '',
-          description: '',
-          coverPhoto: ''
+          image_name: '1',
+          category_id: '',
+          restaurant_id: '3',
       }
         
       const [formValue, setFormValue] = useState(initialValue)
@@ -79,8 +64,12 @@ const CreateMenu = ({ navigation }) => {
       const setPoints = (value) => {
         setFormValue({...formValue, points: value})
       }
-      const setDescription = (value) => {
-        setFormValue({...formValue, description: value})
+      const setCategory = (value) => {
+        setFormValue({...formValue, category_id: value})
+      }
+      const setImageName = (value) => {
+        console.log(value)
+        setFormValue({...formValue, image_name: value})
       }
 
       const handleChoosePhoto = () => {
@@ -89,6 +78,50 @@ const CreateMenu = ({ navigation }) => {
 
       const setCoverPhoto = (value) => {
         setFormValue({...formValue, coverPhoto: value})
+      }
+      
+      const uploadImage = async () => {
+        try {
+          const formData = new FormData();
+          formData.append('image', {
+            uri: image,
+            name: 'vegan_burger.jpg',
+            type: 'image/jpeg'
+          })
+          const response = await fetch(`${API}/upload`, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            body: formData
+          })
+          .then(data => data.json())
+          .then(result => {
+            setServerImage(API+"/"+result?.message)
+            return API+"/"+result?.message
+          })
+
+          return response
+        } catch (err) {
+          console.log('Err uploading image: ', err)
+        }
+      }
+
+      const handleSubmit = () => {
+        console.log(formValue, image, 106)
+        if(Object.values(formValue).includes("") || image == "") {
+          alert("All fields are required!")
+        } else {
+          console.log('Ready to go')
+          uploadImage()
+          .then(data => {
+            console.log(data, serverImage)
+              formValue.image_name = data
+              console.log(formValue)
+            }
+          )
+          .catch(err => console.log(err))
+        }
       }
       
       return (
@@ -123,12 +156,21 @@ const CreateMenu = ({ navigation }) => {
             />
           </View>
           <View style={{ width: '100%', display: 'flex', gap: 4 }}>
-            <Text style={{ fontSize: 16 }}>Description</Text>
-            <TextInput
-              style={{ width: '100%', fontSize: 16, padding: 12, backgroundColor: '#cbcbcb80', borderRadius: 12 }}
-              onChangeText={newValue => setDescription(newValue)}
-              value={formValue.price}
-              placeholder='description'
+            <Text style={{ fontSize: 16 }}>Category</Text>
+            <SelectDropdown data={categoryList}
+              buttonStyle={{ width: '100%', padding: 12, backgroundColor: '#cbcbcb80', borderRadius: 12, borderWidth: 1, borderColor: color.gray, borderRadius: 10 }}
+              buttonTextStyle={{ fontSize: 16, textAlign: 'left' }}
+              rowTextStyle={{ fontSize: 16, textAlign: 'left'}}
+              onSelect={(selectedItem, i) => {
+                setCategory(selectedItem.id)
+              }}
+              buttonTextAfterSelection={(selectedItem, i) => {
+                return selectedItem.icon + selectedItem.name
+              }}
+              rowTextForSelection={(item, index) => {
+                return item.icon + item.name
+              }}
+              defaultButtonText='Select a Category'
             />
           </View>
           <View style={{ width: '100%', display: 'flex', gap: 4 }}>
@@ -140,7 +182,7 @@ const CreateMenu = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={ styles.button }
-            onPress={() => uploadImage()}
+            onPress={() => handleSubmit()}
           >
             <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Create</Text>
           </TouchableOpacity>

@@ -9,8 +9,12 @@ import restaurant1 from '../assets/popularRestaurants/restaurant1.png'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import star from '../assets/star.png'
 import task from '../assets/task.png'
+import t_menu1 from '../assets/trendingMenu/trendingMenu1.png'
+import t_menu2 from '../assets/trendingMenu/trendingMenu2.png'
+import t_menu3 from '../assets/trendingMenu/trendingMenu3.png'
 import { getOrderByCustomerId } from '../api/Order/GetOrderByCustomerId'
 import { GetOrderItemByOrderId } from '../api/OrderItem/GetOrderItemByOrderId'
+import { getAllMenu } from '../api/Menu/getAllMenu'
 
 const UserProfile = ({ navigation }) => {
 
@@ -18,6 +22,7 @@ const UserProfile = ({ navigation }) => {
   const { contextCurrentUser } = context
   const [user, setUser] = useState()
   const [orderList, setOrderList] =  useState([])
+  const [menuList, setMenuList] = useState([])
 
   useEffect(() => {
     setUser(contextCurrentUser)
@@ -31,6 +36,14 @@ const UserProfile = ({ navigation }) => {
           setOrderList(data.message)
         }
       })
+      .catch(err => console.log(err))
+      getAllMenu()
+      .then(data => {
+        if(data.success) {
+          setMenuList(data.message)
+        }
+      })
+      .catch(err => console.log(err))
     }
   }, [user])
 
@@ -101,7 +114,7 @@ const UserProfile = ({ navigation }) => {
 
   const OrderList = () => {
 
-    const [menuList, setMenuList] = useState([])
+    const [orderItemList, setOrderItemList] = useState([])
     const [selectOrder, setSelectOrder] = useState()
 
     useEffect(() => {
@@ -110,11 +123,10 @@ const UserProfile = ({ navigation }) => {
       GetOrderItemByOrderId(orderId)
       .then(data => {
         if(data?.success) {
-          setMenuList(data?.message)
+          setOrderItemList(data?.message)
         }
       })
     }, [orderList])
-    console.log(menuList)
 
     const convertTimeForamt = (timestampString) => {
       const timestamp = new Date(timestampString);
@@ -125,30 +137,52 @@ const UserProfile = ({ navigation }) => {
     
       return `${day}/${month} - ${hours}:${minutes}`;
     }
+
+    const RenderItem = ({ cartItem, quantity }) => {
+        return (
+          <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', paddingBottom: 12, borderBottomColor: '#CBCBCB', borderBottomWidth: 0.5 }}>
+            <Text style={{ fontSize: 16 }}>{quantity}X</Text>
+              <View style={{ width: 75, height: 75, overflow: 'hidden'}}>
+                <Image source={t_menu1} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+              </View>
+            <View style={{ maxWidth: '80%', gap: 4, flexWrap: 'wrap'}}>
+              <Text style={{ maxWidth: '80%', fontSize: 16, fontWeight: 'bold', flexWrap: 'wrap' }}>{cartItem.name}</Text>
+            </View>
+            <Text style={{ marginLeft: 'auto', fontSize: 16 }}>{cartItem.price} Baht</Text>
+          </View>
+        )
+    }
     console.log(selectOrder)
 
     return (
       <View style={{ width: '100%', gap: 8}}>
         <Text style={{ fontSize: 16, fontWeight: 'bold'}}>Order Lists</Text>
-        {orderList?.map((order, id) => {
+        {orderList?.map((order, i) => {
           return (
-            <>
-            <TouchableOpacity 
-              key={id} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8, backgroundColor: 'white', borderRadius: 8}}
-              onPress={() => setSelectOrder(order.id)}
-            >
-              <Text style={{ fontSize: 16 }}>Order {id+1}</Text>
-              <Text style={{ fontSize: 16 }}>{convertTimeForamt(order.created_at)}</Text>
-            </TouchableOpacity>
-            {/* {menuList?.map((item, i) => {
-              console.log(item.order_id)
-              if(item.order_id == selectOrder) {
-                return (
-                  <Text>{item.menu_id}here</Text>
-                )
-              }
-            })} */}
-            </>
+            <View key={i} style={{ width: '100%', display: 'flex' }}>
+              <TouchableOpacity 
+                key={i} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8, backgroundColor: 'white', borderRadius: 8}}
+                onPress={() => selectOrder == order.id ? setSelectOrder() : setSelectOrder(order.id)}
+              >
+                <Text style={{ fontSize: 16 }}>Order {i+1}</Text>
+                <Text style={{ fontSize: 16 }}>{convertTimeForamt(order.created_at)}</Text>
+              </TouchableOpacity>
+              {selectOrder == order.id ? (
+                <View style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 8 }}>
+                  {orderItemList?.map((item, i) => (
+                      item.order_id == order.id ? 
+                        menuList.map((menu, i) => (
+                          menu.id == item.menu_id ? (
+                            <RenderItem key={i} cartItem={menu} quantity={item.quantity} />
+                          ) : ""
+                        ))
+                      : (
+                        ""
+                      )
+                  ))}
+                </View>
+              ) : ""}
+            </View>
           )
         })}
 

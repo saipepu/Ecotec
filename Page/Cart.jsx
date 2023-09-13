@@ -81,7 +81,7 @@ const Cart = ({ navigation }) => {
       console.log('Checkout')
       var total_amount = total
       var total_points = point
-      var customer_id = contextCurrentUser.id
+      var customer_id = contextCurrentUser?.id
       setLoading(true)
 
       createOrder({total_amount, total_points, customer_id})
