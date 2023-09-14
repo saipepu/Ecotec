@@ -22,9 +22,8 @@ import AppStateContext from '../hook/AppStateContext'
 const Home = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
-  const { contextCurrentUser } = context
-
-  console.log(contextCurrentUser)
+  const { contextCurrentUser, contextRole } = context
+  console.log(contextRole, 26)
 
   const Header = () => {
     return (
@@ -40,7 +39,9 @@ const Home = ({ navigation }) => {
               <Image source={avatar} style={{ width: '100%', height: '100%' }}/>
             </View>
             <View style={{ display: 'flex' }}>
-              <Text style={{ fontSize: 14 }}>Rank: {contextCurrentUser?.level}</Text>
+              {contextCurrentUser?.level ? (
+                <Text style={{ fontSize: 14 }}>Rank: {contextCurrentUser?.level}</Text>
+              ) : (<></>)}
               <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>{contextCurrentUser?.name}</Text>
             </View>
           </View>

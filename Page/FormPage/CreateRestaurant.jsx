@@ -1,20 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import HeaderNav from '../../components/HeaderNav'
-import PrimaryButton from '../../components/PrimaryButton'
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker'
-// import RNFS from 'react-native-fs'
-import * as FileSystem from 'expo-file-system'
 import color from '../../theme/colors';
 import { API } from '../../api/api'
 import SelectDropdown from 'react-native-select-dropdown';
-import { getAllCategory } from '../../api/Category/getAllCategory'
 import AppStateContext from '../../hook/AppStateContext';
-import { getRestaurantByChefId } from '../../api/Restaurants/getRestaurantByChefID'
-import { CreateMenu as CreateMenuAPI } from '../../api/Menu/CreateMenu';
+import { CreateRestauant as CreateRestaurantAPI } from '../../api/Restaurants/CreateRestaurant';
 
-const CreateMenu = ({ navigation }) => {
+const CreateRestaurant = ({ navigation }) => {
 
   const Form = () => {
 
@@ -22,32 +16,12 @@ const CreateMenu = ({ navigation }) => {
       const [serverImage, setServerImage] = useState()
       const context = useContext(AppStateContext)
       const { contextCurrentUser } = context
-      const [categoryList, setCategoryList] = useState()
-      const [restaurant, setRestaurant] = useState()
 
       useEffect(() => {
         (async () => {
           const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         })();
-        getAllCategory()
-        .then(data => {
-          if(data.success) {
-            setCategoryList(data.message)
-          }
-        })
       }, [])
-
-      useEffect(() => {
-        getRestaurantByChefId(contextCurrentUser.id)
-        .then(data => {
-          if(data.success) {
-            console.log(data.message)
-            setRestaurant(data.message[0])
-          }
-        })
-        .catch(err => console.log(err))
-      }, [contextCurrentUser])
-      console.log(restaurant, 50)
 
       const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -63,11 +37,10 @@ const CreateMenu = ({ navigation }) => {
 
       let initialValue = {
           name: '',
-          price: '',
-          points: '',
+          location: '',
+          schedule: '',
           image_name: '1',
-          category_id: '',
-          restaurant_id: restaurant?.id,
+          chef_id: contextCurrentUser?.id,
       }
         
       const [formValue, setFormValue] = useState(initialValue)
@@ -75,26 +48,17 @@ const CreateMenu = ({ navigation }) => {
       const setName = (value) => {
         setFormValue({...formValue, name: value})
       }
-      const setPrice = (value) => {
-        setFormValue({...formValue, price: value})
+
+      const setLocation = (value) => {
+        setFormValue({...formValue, location: value})
       }
-      const setPoints = (value) => {
-        setFormValue({...formValue, points: value})
-      }
-      const setCategory = (value) => {
-        setFormValue({...formValue, category_id: value})
-      }
-      const setImageName = (value) => {
-        console.log(value)
-        setFormValue({...formValue, image_name: value})
+
+      const setSchedule = (value) => {
+        setFormValue({...formValue, schedule: value})
       }
 
       const handleChoosePhoto = () => {
         pickImage()
-      }
-
-      const setCoverPhoto = (value) => {
-        setFormValue({...formValue, coverPhoto: value})
       }
       
       const uploadImage = async () => {
@@ -132,17 +96,15 @@ const CreateMenu = ({ navigation }) => {
           console.log('Ready to go')
           uploadImage()
           .then(data => {
-            console.log(data, serverImage)
+            console.log(data, 107)
               formValue.image_name = data
-              formValue.restaurant_id = restaurant?.id
-              console.log(formValue)
-              CreateMenuAPI(formValue)
+              CreateRestaurantAPI(formValue)
               .then(data => {
                 if(data.success) {
                   console.log(data.message)
                 }
               })
-              .catch(err => console.log(err))
+              .catch(err => console.log(err, 'here'))
             }
           )
           .catch(err => console.log(err))
@@ -161,41 +123,21 @@ const CreateMenu = ({ navigation }) => {
             />
           </View>
           <View style={{ width: '100%', display: 'flex', gap: 4 }}>
-            <Text style={{ fontSize: 16 }}>Price</Text>
+            <Text style={{ fontSize: 16 }}>Location</Text>
             <TextInput
               style={{ width: '100%', fontSize: 16, padding: 12, backgroundColor: '#cbcbcb80', borderRadius: 12 }}
-              onChangeText={newValue => setPrice(newValue)}
+              onChangeText={newValue => setLocation(newValue)}
               value={formValue.price}
-              placeholder='6.99'
-              keyboardType="numeric"
+              placeholder='Bangkok, Siam Center'
             />
           </View>
           <View style={{ width: '100%', display: 'flex', gap: 4 }}>
-            <Text style={{ fontSize: 16 }}>Points</Text>
+            <Text style={{ fontSize: 16 }}>Schedule</Text>
             <TextInput
               style={{ width: '100%', fontSize: 16, padding: 12, backgroundColor: '#cbcbcb80', borderRadius: 12 }}
-              onChangeText={newValue => setPoints(newValue)}
+              onChangeText={newValue => setSchedule(newValue)}
               value={formValue.points}
-              placeholder='25'
-              keyboardType='numeric'
-            />
-          </View>
-          <View style={{ width: '100%', display: 'flex', gap: 4 }}>
-            <Text style={{ fontSize: 16 }}>Category</Text>
-            <SelectDropdown data={categoryList}
-              buttonStyle={{ width: '100%', padding: 12, backgroundColor: '#cbcbcb80', borderRadius: 12, borderWidth: 1, borderColor: color.gray, borderRadius: 10 }}
-              buttonTextStyle={{ fontSize: 16, textAlign: 'left' }}
-              rowTextStyle={{ fontSize: 16, textAlign: 'left'}}
-              onSelect={(selectedItem, i) => {
-                setCategory(selectedItem.id)
-              }}
-              buttonTextAfterSelection={(selectedItem, i) => {
-                return selectedItem.icon + selectedItem.name
-              }}
-              rowTextForSelection={(item, index) => {
-                return item.icon + item.name
-              }}
-              defaultButtonText='Select a Category'
+              placeholder='10AM - 10PM'
             />
           </View>
           <View style={{ width: '100%', display: 'flex', gap: 4 }}>
@@ -211,9 +153,6 @@ const CreateMenu = ({ navigation }) => {
           >
             <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Create</Text>
           </TouchableOpacity>
-          <View style={{ display: 'flex', width: 300, height: 300, backgroundColor: color.black }}>
-            <Image source={{ uri: serverImage }} style={{ width: 50, height: 50 }} />
-          </View>
         </View>
       )
   }
@@ -223,14 +162,14 @@ const CreateMenu = ({ navigation }) => {
       <HeaderNav backTo={'ChefProfile'} navigation={navigation} right={false}/>
       <ScrollView
         vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Create a Menu</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Create a Restaurant</Text>
           <Form />
       </ScrollView>
     </View>
   )
 }
 
-export default CreateMenu
+export default CreateRestaurant
 
 const styles = StyleSheet.create({
   container: {

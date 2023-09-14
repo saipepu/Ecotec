@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import SignUpPng from '../../assets/SignUp.png'
 import color from '../../theme/colors'
 import font from '../../theme/font'
@@ -7,13 +7,15 @@ import userIcon from '../../assets/Icon/user.png'
 import passwordIcon from '../../assets/Icon/password.png'
 import emailIcon from '../../assets/Icon/email.png'
 import { Link } from '@react-navigation/native'
-import { SignUp as SignUpApi } from '../../api/Customer/SignUp'
+import { SignUp as SignUpCustomer } from '../../api/Customer/SignUp'
+import { SignUp as SignUpChef } from '../../api/Chef/SignUp'
 
 const SignUp = ({ navigation }) => {
 
   const [userName, setUserName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [asChef, setAsChef] = useState(false)
 
   const checkForm = ({name, email, password}) => {
     if (name != "" && email != "" && password != "") {
@@ -35,16 +37,29 @@ const SignUp = ({ navigation }) => {
       password: password
     }
     if(checkForm(formData)) {
-      console.log('valid')
-      SignUpApi(formData).then(data => {
-        if(data?.success) {
-          console.log('SignUp Success')
-          navigation.navigate('SignIn')
-        } else {
-          console.log('SignUp Failed', data?.message)
-          alert('Wrong Credential!')
-        }
-      })
+      console.log('Sign Up as ', asChef ? 'chef' : 'customer' )
+      if(asChef) {
+        SignUpChef(formData).then(data => {
+          if(data?.success) {
+            console.log('SignUp Success')
+            navigation.navigate('SignIn')
+          } else {
+            console.log('SignUp Failed', data?.message)
+            alert('Wrong Credential!')
+          }
+        })
+      }
+      if (!asChef) {
+        SignUpCustomer(formData).then(data => {
+          if(data?.success) {
+            console.log('SignUp Success')
+            navigation.navigate('SignIn')
+          } else {
+            console.log('SignUp Failed', data?.message)
+            alert('Wrong Credential!')
+          }
+        })
+      }
     } else {
       console.log('invalid')
     }
@@ -61,6 +76,16 @@ const SignUp = ({ navigation }) => {
           {/* </View> */}
           <View style={{ width: '100%', flex: 1, backgroundColor: 'white', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 20, paddingBottom: 32, gap: 8}}>
             <Text htmlfor='legend' style={{ fontSize: 24, fontWeight: 'bold' }}>Sign Up</Text>
+            <View style={{ wdith: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 12 }}>
+              <Switch
+                trackColor={{false: color.secondary, true: color.black}}
+                thumbColor={true ? color.primary : color.black}
+                onValueChange={newValue => setAsChef(newValue)}
+                value={asChef}
+                // style={{ flex: 1 }}
+              />
+              <Text>Sign In as Chef?</Text>
+            </View>
             {/* Username */}
             <Text htmlfor='label' style={{ fontSize: 18, }}>Username</Text>
             <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', padding: 12, gap: 8, backgroundColor: '#F0F0F0', borderRadius: 8, }}>
@@ -96,8 +121,8 @@ const SignUp = ({ navigation }) => {
             <TouchableOpacity
               style={{ ...styles.button}}
               onPress={() => {
-                navigation.navigate('Home')
-                // handleSubmit()
+                // navigation.navigate('Home')
+                handleSubmit()
               }}
             >
               <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Sign Up</Text>

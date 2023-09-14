@@ -1,20 +1,22 @@
 import React, { useContext, useState } from 'react'
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import SignUpPng from '../../assets/SignUp.png'
 import color from '../../theme/colors'
 import font from '../../theme/font'
 import userIcon from '../../assets/Icon/user.png'
 import passwordIcon from '../../assets/Icon/password.png'
 import { Link } from '@react-navigation/native'
-import { SignIn as SignInApi } from '../../api/Customer/SignIn'
+import { SignIn as SignInCustomer } from '../../api/Customer/SignIn'
+import { SignIn as SignInChef } from '../../api/Chef/SignIn'
 import AppStateContext from '../../hook/AppStateContext'
 
 const SignIn = ({ navigation }) => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [asChef, setAsChef] = useState(false)
   const context = useContext(AppStateContext)
-  const { setContextCurrentUser } = context
+  const { setContextCurrentUser, setContextRole } = context
 
   const checkForm = ({email, password}) => {
     if (email != "" && password != "") {
@@ -31,18 +33,34 @@ const SignIn = ({ navigation }) => {
       password: password
     }
     if(checkForm(formData)) {
-      console.log('valid')
-      console.log(formData)
-      SignInApi(formData).then(data => {
-        if(data?.success) {
-          console.log('SignUp Success')
-          setContextCurrentUser(data.message)
-          navigation.navigate('Home')
-        } else {
-          console.log('SignUp Failed', data?.message)
-          alert(data?.message)
-        }
-      })
+      console.log('Sign In as ', asChef ? 'chef' : 'customer' )
+      if(asChef) {
+        SignInChef(formData).then(data => {
+          if(data?.success) {
+            console.log('SignUp Success')
+            setContextCurrentUser(data.message)
+            setContextRole('Chef')
+            navigation.navigate('Home')
+          } else {
+            console.log('SignUp Failed', data?.message)
+            alert(data?.message)
+          }
+        })
+      }
+      if(!asChef) {
+        SignInCustomer(formData).then(data => {
+          if(data?.success) {
+            console.log('SignUp Success')
+            setContextCurrentUser(data.message)
+            setContextRole('Customer')
+            navigation.navigate('Home')
+          } else {
+            console.log('SignUp Failed', data?.message)
+            alert(data?.message)
+          }
+        })
+      }
+
     }
   }
 
@@ -57,6 +75,16 @@ const SignIn = ({ navigation }) => {
           {/* </View> */}
           <View style={{ width: '100%', flex: 1, backgroundColor: 'white', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 20, paddingBottom: 32, gap: 8}}>
             <Text htmlfor='legend' style={{ fontSize: 24, fontWeight: 'bold' }}>Sign In</Text>
+            <View style={{ wdith: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 12 }}>
+              <Switch
+                trackColor={{false: color.secondary, true: color.black}}
+                thumbColor={true ? color.primary : color.black}
+                onValueChange={newValue => setAsChef(newValue)}
+                value={asChef}
+                // style={{ flex: 1 }}
+              />
+              <Text>Sign In as Chef?</Text>
+            </View>
             {/* Email */}
             <Text htmlfor='label' style={{ fontSize: 18, }}>Email</Text>
             <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', padding: 12, gap: 8, backgroundColor: '#F0F0F0', borderRadius: 8, }}>

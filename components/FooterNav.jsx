@@ -11,6 +11,7 @@ const FooterNav = ({ navigation, chef, profile }) => {
   const [viewRef, setViewRef] = useState(null);
   const [blurType, setBlurType] = useState('light');
   const context = useContext(AppStateContext)
+  const { contextRole } = context
 
   let IsChef = chef ? chef : false;
 
@@ -25,7 +26,7 @@ const FooterNav = ({ navigation, chef, profile }) => {
     // },
     {
       icon: 'person',
-      link: IsChef ? 'ChiefProfile' : 'UserProfile'
+      link: IsChef ? 'ChefProfile' : 'UserProfile'
     },
     {
       icon: 'shopping-cart',
@@ -59,8 +60,8 @@ const FooterNav = ({ navigation, chef, profile }) => {
                     style={{ width: '100%', padding: 12, borderRadius: 12, backgroundColor: color.primary }} 
                     onPress={() => {
                       setModalVisible(false)
-                      context.updateContextCurrentTab('ChiefProfile')
-                      navigation.navigate('ChiefProfile')
+                      context.updateContextCurrentTab('ChefProfile')
+                      navigation.navigate('ChefProfile')
                     }}
                   >
                     <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', color: 'white' }}>Chef Profile</Text>
@@ -81,7 +82,7 @@ const FooterNav = ({ navigation, chef, profile }) => {
           </TouchableOpacity>
         </Modal>
         {link.map((item, i) => {
-          return chef && item.link == 'Cart' ? "" : (
+          return contextRole == 'Chef' && item.link == 'Cart' ? "" : (
             <TouchableOpacity key={i} style={{ width: 35, height: 35, borderRadius: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             onPress={() => {
               item.icon == 'person' ? setModalVisible(true) : item.link ? navigation.navigate(item.link) : ""
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 2,

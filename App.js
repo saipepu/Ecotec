@@ -9,11 +9,12 @@ import Restaurants from './Page/Restaurants';
 import RestaurantMenu from './Page/RestaurantMenu';
 import Cart from './Page/Cart';
 import AppStateContext from './hook/AppStateContext';
-import ChiefProfile from './Page/ChiefProfile';
+import ChefProfile from './Page/ChefProfile';
 import CreateMenu from './Page/FormPage/CreateMenu';
 import UserProfile from './Page/UserProfile';
 import SignUp from './Page/FormPage/SignUp';
 import SignIn from './Page/FormPage/SignIn';
+import CreateRestaurant from './Page/FormPage/CreateRestaurant';
 
 export default function App() {
 
@@ -21,6 +22,7 @@ export default function App() {
   const [contextCurrentTab, setContextCurrentTab] = useState('Home')
   const [contextCart, setContextCart] = useState({})
   const [contextCurrentUser, setContextCurrentUser] = useState()
+  const [contextRole, setContextRole] = useState('Customer')
 
   const updateContextRestaurant = r => {
     setContextRestaurant(r)
@@ -36,7 +38,9 @@ export default function App() {
     contextCart: contextCart,
     setContextCart: setContextCart,
     contextCurrentUser: contextCurrentUser,
-    setContextCurrentUser: setContextCurrentUser
+    setContextCurrentUser: setContextCurrentUser,
+    contextRole: contextRole,
+    setContextRole: setContextRole,
   }
 
   const Stack = createStackNavigator()
@@ -63,8 +67,9 @@ export default function App() {
           <Stack.Screen name="Restaurants" component={Restaurants} />
           <Stack.Screen name="RestaurantMenu" component={RestaurantMenu} />
           <Stack.Screen name="Cart" component={Cart} />
-          <Stack.Screen name="ChiefProfile" component={ChiefProfile} />
+          <Stack.Screen name="ChefProfile" component={ChefProfile} />
           <Stack.Screen name="CreateMenu" component={CreateMenu} />
+          <Stack.Screen name="CreateRestaurant" component={CreateRestaurant} />
           <Stack.Screen name="UserProfile" component={UserProfile} />
         </Stack.Navigator>
       </NavigationContainer>

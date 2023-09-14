@@ -101,7 +101,7 @@ const UserProfile = ({ navigation }) => {
               </View>
               {/* point */}
               <View style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold'}}>{user?.level.toUpperCase()}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold'}}>{user?.level?.toUpperCase()}</Text>
                 <Text style={{ fontSize: 14, color: color.dark }}>Rank</Text>
               </View>
             </View>

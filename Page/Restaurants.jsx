@@ -234,12 +234,12 @@ export default Restaurants
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: '100%',
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
     overflow: 'visible',
     gap: 20,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    paddingBottom: 100
   },
 })

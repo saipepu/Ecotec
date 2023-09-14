@@ -18,6 +18,7 @@ const RestaurantMenu = ({ navigation }) => {
   const [restaurant, setRestaurant] = useState(context.contextRestaurant)
   const [categoryList, setCategoryList] = useState([])
   const [menu, setMenu] = useState([])
+  const { contextRole } = context
 
   let menuCategories = [
     {
@@ -65,6 +66,7 @@ const RestaurantMenu = ({ navigation }) => {
       image: t_menu3
     },
   ]
+  console.log(menu)
 
   useEffect(() => {
     Promise.all([
@@ -170,13 +172,18 @@ const RestaurantMenu = ({ navigation }) => {
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
               <Text style={{ fontSize: 16 }}>{menu.price} Baht</Text>
-              <TouchableOpacity
-                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: color.primary, paddingHorizontal: 8, paddingVertical: 4, gap: 4}}
-                onPress={() => addToCart(menu)}
-              >
-                <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>Add</Text>
-                <Icon name="add" size={12} color={'white'} />
-              </TouchableOpacity>
+              {contextRole == 'Customer' ? (
+                <TouchableOpacity
+                  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: color.primary, paddingHorizontal: 8, paddingVertical: 4, gap: 4}}
+                  onPress={() => addToCart(menu)}
+                >
+                  <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>Add</Text>
+                  <Icon name="add" size={12} color={'white'} />
+                </TouchableOpacity>
+              ) : (
+                <></>
+              )}
+                <></>
             </View>
           </View>
         </TouchableOpacity>
