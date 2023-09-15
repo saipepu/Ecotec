@@ -180,7 +180,7 @@ const Restaurants = ({ navigation }) => {
             navigation.navigate('RestaurantMenu')
           }}>
           <View style={{ width: '100%', height: 120, display: 'flex' }}>
-            <Image source={restaurant1} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
+            <Image source={{ uri: restaurant.image }} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
           </View>
           <View style={{ width: '100%', display: 'flex', padding: 8}}>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
