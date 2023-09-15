@@ -1,14 +1,16 @@
 import { API } from "../api";
 
-export const UpdatePoints = async ({customer_id, points}) => {
+export const UpdatePoints = async (formData) => {
 
-  return await fetch(`${API}/customer/update/${customer_id}`, {
-    method: "POST",
+  var { customer_id, points } = formData
+  console.log(JSON.stringify(points))
+  return await fetch(`${API}/customer/updatePoints/${customer_id}`, {
+    method: "PUT",
     headers: {
       Accept: 'application/json',
       "Content-Type": 'application/json'
     },
-    body: JSON.stringify(formData)
+    body: JSON.stringify(points)
   })
   .then(res => res.json())
   .catch(err => err)
