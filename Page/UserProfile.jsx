@@ -15,37 +15,18 @@ import t_menu3 from '../assets/trendingMenu/trendingMenu3.png'
 import { getOrderByCustomerId } from '../api/Order/GetOrderByCustomerId'
 import { GetOrderItemByOrderId } from '../api/OrderItem/GetOrderItemByOrderId'
 import { getAllMenu } from '../api/Menu/getAllMenu'
+import { DeleteOrderById } from '../api/Order/DeleteOrder'
+import { UpdatePoints } from '../api/Customer/UpdatePoints'
 
 const UserProfile = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
-  const { contextCurrentUser } = context
+  const { contextCurrentUser, setContextCurrentUser } = context
   const [user, setUser] = useState()
-  const [orderList, setOrderList] =  useState([])
-  const [menuList, setMenuList] = useState([])
-
+  
   useEffect(() => {
     setUser(contextCurrentUser)
   }, [contextCurrentUser])
-
-  useEffect(() => {
-    if(user) {
-      getOrderByCustomerId(user?.id)
-      .then(data => {
-        if(data.success) {
-          setOrderList(data.message)
-        }
-      })
-      .catch(err => console.log(err))
-      getAllMenu()
-      .then(data => {
-        if(data.success) {
-          setMenuList(data.message)
-        }
-      })
-      .catch(err => console.log(err))
-    }
-  }, [user])
 
   const Header = () => {
     return (
@@ -117,6 +98,28 @@ const UserProfile = ({ navigation }) => {
     const [orderItemList, setOrderItemList] = useState([])
     const [selectOrder, setSelectOrder] = useState()
 
+    const [orderList, setOrderList] =  useState([])
+    const [menuList, setMenuList] = useState([])
+    
+    useEffect(() => {
+      if(user) {
+        getOrderByCustomerId(user?.id)
+        .then(data => {
+          if(data.success) {
+            setOrderList(data.message)
+          }
+        })
+        .catch(err => console.log(err))
+        getAllMenu()
+        .then(data => {
+          if(data.success) {
+            setMenuList(data.message)
+          }
+        })
+        .catch(err => console.log(err))
+      }
+    }, [user])
+
     useEffect(() => {
       var orderId = []
       orderList.map((order, i) => orderId.push(order.id))
@@ -138,6 +141,46 @@ const UserProfile = ({ navigation }) => {
       return `${day}/${month} - ${hours}:${minutes}`;
     }
 
+    const handleDeleteOrder = (order) => {
+      console.log('Deleting Order Id ', order?.id)
+      var reducedPoints = -order?.total_points
+
+      DeleteOrderById(order?.id)
+      .then(data => {
+          if(data.success) {
+            // update customer points -> reduce
+            var points = { points: reducedPoints }
+            var customer_id = contextCurrentUser?.id
+            var myObj = {
+              customer_id: customer_id,
+              points: points
+            }
+            UpdatePoints(myObj)
+            .then(data => {
+              if(data.success) {
+                setContextCurrentUser({...contextCurrentUser, points: contextCurrentUser.points + reducedPoints })
+              }
+            })
+            .catch(err => console.log(err))
+
+            // update order list UI
+            getOrderByCustomerId(user?.id)
+            .then(data => {
+              if(data.success) {
+                setOrderList(data.message)
+              }
+            })
+            .catch(err => console.log(err))
+
+          alert('Delete Order Successfully.', order_id)
+        } else {
+          alert('Deleting Order Failed!')
+          console.log('Deleting Order Failed!', data)
+        }
+      })
+      .catch(err => alert('Deleting Order Failed!', err))
+    }
+
     const RenderItem = ({ cartItem, quantity }) => {
         return (
           <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', paddingBottom: 12, borderBottomColor: '#CBCBCB', borderBottomWidth: 0.5 }}>
@@ -156,15 +199,20 @@ const UserProfile = ({ navigation }) => {
     return (
       <View style={{ width: '100%', gap: 8}}>
         <Text style={{ fontSize: 16, fontWeight: 'bold'}}>Order Lists</Text>
-        {orderList?.map((order, i) => {
+        {orderList && orderList?.map((order, i) => {
           return (
             <View key={i} style={{ width: '100%', display: 'flex' }}>
               <TouchableOpacity 
                 key={i} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: 'white', borderRadius: 8}}
                 onPress={() => selectOrder == order.id ? setSelectOrder() : setSelectOrder(order.id)}
               >
-                <Text style={{ fontSize: 16 }}>Order {i+1}</Text>
-                <Text style={{ fontSize: 16 }}>{convertTimeForamt(order.created_at)}</Text>
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end', gap: 12 }}>
+                  <Text style={{ fontSize: 16 }}>Order {order.id}</Text>
+                  <Text style={{ fontSize: 16 }}>{convertTimeForamt(order.created_at)}</Text>
+                </View>
+                <TouchableOpacity onPress={() => handleDeleteOrder(order)}>
+                  <Icon name={'delete'} size="18" color="gray" style={{ width: 18, height: 18 }} />
+                </TouchableOpacity>
               </TouchableOpacity>
               {selectOrder == order.id ? (
                 <View style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 8 }}>
