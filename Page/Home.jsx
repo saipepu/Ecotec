@@ -121,10 +121,10 @@ const Home = ({ navigation }) => {
     return (
       <View style={{ width: '100%', display: 'flex', gap: 4 }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Group Activities</Text>
-        <ScrollView horizontal={true} persistentScrollbar={false} style={{ overflow: 'visible'}} showsHorizontalScrollIndicator={false}>
-            <View style={{ width: 200, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', borderRadius: 15, overflow: 'hidden', backgroundColor: 'white', marginRight: 12}}>
-              <View style={{ width: '100%', height: 100, borderBottomWidth: 1, borderBottomColor: 'black' }}>
-                <Image source={gp_act_1} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
+        <ScrollView horizontal={true} persistentScrollbar={false} style={{ overflow: 'visible', height: 200 }} showsHorizontalScrollIndicator={false}>
+            <View style={{ width: 360, height: '100%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', borderRadius: 15, overflow: 'hidden', backgroundColor: 'white', marginRight: 12}}>
+              <View style={{ width: '100%', flex: 1, borderBottomWidth: 1, borderBottomColor: 'black', overflow: 'hidden'}}>
+                <Image source={gp_act_1} style={{ width: '100%', height: '120%', resizeMode: 'contain' }} />
               </View>
               <View style={{ width: '100%', paddingHorizontal: 12, paddingVertical: 12}}>
                 <Text style={{ fontSize: 16, fontWeight: 'normal', width: '100%', flexWrap: 'wrap' }}>Discussion with Family Members</Text>
@@ -134,9 +134,9 @@ const Home = ({ navigation }) => {
                 </View>
               </View>
             </View>
-            <View style={{ width: 200, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', borderRadius: 15, overflow: 'hidden', backgroundColor: 'white'}}>
-              <View style={{ width: '100%', height: 100, borderBottomWidth: 1, borderBottomColor: 'black' }}>
-                <Image source={gp_act_2} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
+            <View style={{ width: 360, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', borderRadius: 15, overflow: 'hidden', backgroundColor: 'white'}}>
+              <View style={{ width: '100%', flex: 1, borderBottomWidth: 1, borderBottomColor: 'black', overflow: 'hidden'}}>
+                <Image source={gp_act_2} style={{ width: '100%', height: '120%', resizeMode: 'contain' }} />
               </View>
               <View style={{ width: '100%', paddingHorizontal: 12, paddingVertical: 12}}>
                 <Text style={{ fontSize: 16, fontWeight: 'normal', width: '100%', flexWrap: 'wrap' }}>Discussion with Family Members</Text>

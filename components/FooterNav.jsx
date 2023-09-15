@@ -48,7 +48,7 @@ const FooterNav = ({ navigation, chef, profile }) => {
           <TouchableOpacity
             style={styles.container} 
             onPress={() => {
-              context.updateContextCurrentTab('Home')
+              // context.updateContextCurrentTab('Home')
               setModalVisible(false)
             }}
           >
@@ -86,7 +86,9 @@ const FooterNav = ({ navigation, chef, profile }) => {
             <TouchableOpacity key={i} style={{ width: 35, height: 35, borderRadius: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             onPress={() => {
               item.icon == 'person' ? setModalVisible(true) : item.link ? navigation.navigate(item.link) : ""
-              context.updateContextCurrentTab(item.link)
+              if(item.icon != 'person') {
+                context.updateContextCurrentTab(item.link)
+              }
             }}
             >
               <Icon name={item.icon} size={30} color={context.contextCurrentTab == item.link ? color.primary : '#cbcbcb'} />

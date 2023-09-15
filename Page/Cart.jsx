@@ -14,6 +14,8 @@ import { createOrderItem } from '../api/OrderItem/createOrderItem'
 const Cart = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
+  const { contextRestaurant } = context
+  console.log(contextRestaurant, 18)
   const [total, setTotal] = useState()
   const [point, setPoint] = useState()
   const { contextCurrentUser, contextCart, setContextCart } = context
@@ -141,7 +143,7 @@ const Cart = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <HeaderNav navigation={navigation} backTo={'RestaurantMenu'} left={false} />
+      <HeaderNav navigation={navigation} backTo={contextRestaurant?.id ? 'RestaurantMenu' : 'Home'} left={false}/>
       <ScrollView
         vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 20 }}>
           <Header />

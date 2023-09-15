@@ -19,6 +19,7 @@ const RestaurantMenu = ({ navigation }) => {
   const [categoryList, setCategoryList] = useState([])
   const [menu, setMenu] = useState([])
   const { contextRole } = context
+  console.log(restaurant)
 
   let menuCategories = [
     {
@@ -66,7 +67,6 @@ const RestaurantMenu = ({ navigation }) => {
       image: t_menu3
     },
   ]
-  console.log(menu)
 
   useEffect(() => {
     Promise.all([
