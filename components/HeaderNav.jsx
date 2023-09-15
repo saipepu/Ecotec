@@ -1,14 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import color from '../theme/colors'
 import { TouchableOpacity, View } from 'react-native'
 import AppStateContext from '../hook/AppStateContext'
 
-const HeaderNav = ({ navigation, backTo, forwardTo, left }) => {
+const HeaderNav = ({ navigation, backTo, forwardTo, left, updateContext }) => {
 
   const context = useContext(AppStateContext)
   const { contextRole, updateContextCurrentTab } = context
-
 
   return (
     <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
@@ -16,6 +15,9 @@ const HeaderNav = ({ navigation, backTo, forwardTo, left }) => {
         onPress={() => {
           if(backTo == 'Home') {
             updateContextCurrentTab('Home')
+          }
+          if(updateContext) {
+            updateContext({})
           }
           navigation.navigate(backTo)
         }}
