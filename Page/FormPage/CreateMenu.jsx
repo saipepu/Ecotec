@@ -139,7 +139,9 @@ const CreateMenu = ({ navigation }) => {
               CreateMenuAPI(formValue)
               .then(data => {
                 if(data.success) {
-                  console.log(data.message)
+                  console.log('Create New Menu Successfully!')
+                  alert('You have created a New Menu.')
+                  navigation.navigate('ChefProfile')
                 }
               })
               .catch(err => console.log(err))
