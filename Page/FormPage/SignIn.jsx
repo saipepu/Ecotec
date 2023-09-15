@@ -71,7 +71,7 @@ const SignIn = ({ navigation }) => {
 
         <View style={{ width: '100%', height: '100%', display: 'flex'}}>
           {/* <View style={{ width: '100%', height: '45%', position: 'relative' }}> */}
-            <Image source={SignUpPng} style={{ width: '130%', height: '45%', top: 0, left: -55, zIndex: 1, overflow: 'visible' }} resizeMode="contain" />
+            <Image source={SignUpPng} style={{ width: '130%', height: '80%', top: 0, left: -55, zIndex: 1, overflow: 'visible' }} resizeMode="contain" />
           {/* </View> */}
           <View style={{ width: '100%', flex: 1, backgroundColor: 'white', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 20, paddingBottom: 32, gap: 8}}>
             <Text htmlfor='legend' style={{ fontSize: 24, fontWeight: 'bold' }}>Sign In</Text>
@@ -130,12 +130,12 @@ export default SignIn
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: '100%',
     paddingTop: 56,
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
     gap: 24,
+    paddingBottom: 500
   },
   button: {
     marginTop: 'auto',

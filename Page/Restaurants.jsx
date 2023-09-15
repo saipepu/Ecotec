@@ -16,6 +16,7 @@ const Restaurants = ({ navigation }) => {
   const [text, onChangeText] = useState('')
   const [restaurantLists, setRestaurantLists] = useState([])
   const context = useContext(AppStateContext)
+  const { contextRestaurant, updateContextRestaurant } = context
 
   let trendingMenu = [
     {
@@ -85,7 +86,9 @@ const Restaurants = ({ navigation }) => {
         setRestaurantLists(data.message)
       }
     })
+    updateContextRestaurant({})
   }, [])
+  console.log(contextRestaurant, 'contextRestaurant')
 
   const Trendings = () => {
 

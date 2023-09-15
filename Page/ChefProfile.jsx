@@ -19,7 +19,6 @@ const ChefProfile = ({ navigation }) => {
     getRestaurantByChefId(contextCurrentUser.id)
     .then(data => {
       if(data.success) {
-        console.log(data.message)
         setRestaurant(data.message[0])
       }
     })

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import SignUpPng from '../../assets/SignUp.png'
 import color from '../../theme/colors'
 import font from '../../theme/font'
@@ -66,7 +66,7 @@ const SignUp = ({ navigation }) => {
   }
 
   return (
-    <View style={{ width: '100%', height: '100%'}}>
+    <KeyboardAvoidingView style={{ width: '100%', height: '100%'}}>
       <ScrollView
         vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
 
@@ -132,7 +132,7 @@ const SignUp = ({ navigation }) => {
 
       </ScrollView>
 
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -141,12 +141,12 @@ export default SignUp
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: '100%',
     paddingTop: 56,
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
     gap: 24,
+    paddingBottom: 500
   },
   button: {
     marginTop: 'auto',

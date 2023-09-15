@@ -10,12 +10,12 @@ import PrimaryButton from '../components/PrimaryButton'
 import AppStateContext from '../hook/AppStateContext'
 import { createOrder } from '../api/Order/CreateOrder'
 import { createOrderItem } from '../api/OrderItem/createOrderItem'
+import { UpdatePoints } from '../api/Customer/UpdatePoints'
 
 const Cart = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
-  const { contextRestaurant } = context
-  console.log(contextRestaurant, 18)
+  const { contextRestaurant, setContextCurrentUser } = context
   const [total, setTotal] = useState()
   const [point, setPoint] = useState()
   const { contextCurrentUser, contextCart, setContextCart } = context
@@ -26,7 +26,6 @@ const Cart = ({ navigation }) => {
   let p = 0
 
   useEffect(() => {
-    console.log('hi')
     let arr = []
     for(var item in contextCart) {
       arr.push(contextCart[item]);
@@ -35,8 +34,6 @@ const Cart = ({ navigation }) => {
     }
     setCartList(arr)
   }, [contextCart])
-  console.log(contextCart)
-  console.log(cartList)
   
   useEffect(() => {
     setTotal(sum)
@@ -92,11 +89,28 @@ const Cart = ({ navigation }) => {
           createOrderItem(cartList, data.message.rows[0].id)
           .then(data => {
             if(data.success) {
+              console.log('update customer points')
+              var points = { points: point }
+              var customer_id = contextCurrentUser?.id
+              var myObj = {
+                customer_id: customer_id,
+                points: points
+              }
+              UpdatePoints(myObj)
+              .then(data => {
+                if(data?.success) {
+                  console.log(data?.message, 102)
+                  setContextCurrentUser(data?.message?.rows[0])
+                }
+                console.log(data, 10000000)
+              })
+              .catch(err => console.log(err, 'Customer points update failed!!!'))
               console.log(data.message, 'created all items')
             } else {
               console.log(data.message, 'error')
             }
           })
+          .catch(err => alert(''))
           console.log('Order Created Successfully')
           setContextCart({})
           setTotal(0)

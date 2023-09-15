@@ -68,7 +68,7 @@ const UserProfile = ({ navigation }) => {
             </View>
         </View>
         <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <PrimaryButton navigation={navigation} props={'CreateMenu'} text={'Add Friends'} styleConfig={{ flex: 1 }} />
+          <PrimaryButton navigation={navigation} props={'UserProfile'} text={'Add Friends'} styleConfig={{ flex: 1 }} />
           <PrimaryButton text={'Share'} />
         </View>
       </View>
@@ -82,7 +82,7 @@ const UserProfile = ({ navigation }) => {
         <Text style={{ fontSize: 16, fontWeight: 'bold'}}>Stats</Text>
         <View style={{ width: '100%', gap: 8 }}>
           <View style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 12 }}>
-            <View style={{ flex: 1, display: 'flex' , flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center',  backgroundColor: color.themeOrange, borderRadius: 12, padding: 12, gap: 12 }}>
+            <View style={{ flex: 1, display: 'flex' , flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center',  backgroundColor: 'white', borderRadius: 12, padding: 12, gap: 12 }}>
               {/* icon */}
               <View style={{ width: 32, height: 32, display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: 'white', opacity: 0.5 }}>
                 <Image source={star} style={{ width: '60%', height: '60%' , resizeMode: 'contain'}} />
@@ -94,7 +94,7 @@ const UserProfile = ({ navigation }) => {
               </View>
             </View>
 
-            <View style={{ flex: 1, display: 'flex' , flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center',  backgroundColor: color.themePurple, borderRadius: 12, padding: 12, gap: 12 }}>
+            <View style={{ flex: 1, display: 'flex' , flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center',  backgroundColor: 'white', borderRadius: 12, padding: 12, gap: 12 }}>
               {/* icon */}
               <View style={{ width: 32, height: 32, display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: 'white', opacity: 0.5 }}>
                 <Image source={task} style={{ width: '60%', height: '60%' , resizeMode: 'contain'}} />
@@ -152,7 +152,6 @@ const UserProfile = ({ navigation }) => {
           </View>
         )
     }
-    console.log(selectOrder)
 
     return (
       <View style={{ width: '100%', gap: 8}}>
@@ -161,7 +160,7 @@ const UserProfile = ({ navigation }) => {
           return (
             <View key={i} style={{ width: '100%', display: 'flex' }}>
               <TouchableOpacity 
-                key={i} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8, backgroundColor: 'white', borderRadius: 8}}
+                key={i} style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: 'white', borderRadius: 8}}
                 onPress={() => selectOrder == order.id ? setSelectOrder() : setSelectOrder(order.id)}
               >
                 <Text style={{ fontSize: 16 }}>Order {i+1}</Text>

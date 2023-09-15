@@ -44,7 +44,6 @@ const CreateRestaurant = ({ navigation }) => {
       }
         
       const [formValue, setFormValue] = useState(initialValue)
-
       const setName = (value) => {
         setFormValue({...formValue, name: value})
       }

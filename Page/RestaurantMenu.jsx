@@ -18,8 +18,7 @@ const RestaurantMenu = ({ navigation }) => {
   const [restaurant, setRestaurant] = useState(context.contextRestaurant)
   const [categoryList, setCategoryList] = useState([])
   const [menu, setMenu] = useState([])
-  const { contextRole } = context
-  console.log(restaurant)
+  const { contextRole, updateContextRestaurant } = context
 
   let menuCategories = [
     {
@@ -137,7 +136,6 @@ const RestaurantMenu = ({ navigation }) => {
 
     const {contextCart, setContextCart} = context
     const addToCart = (menu) => {
-      console.log(menu.id, '139')
       if(menu.id in contextCart) {
         contextCart[menu.id].quantity = contextCart[menu.id].quantity + 1
         setContextCart(contextCart)
@@ -204,7 +202,7 @@ const RestaurantMenu = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <HeaderNav navigation={navigation} backTo={'Restaurants'} forwardTo={'Cart'} />
+      <HeaderNav navigation={navigation} backTo={'Restaurants'} forwardTo={'Cart'} updateContext={updateContextRestaurant}/>
       <ScrollView
         vertical={true} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 20, paddingHorizontal: 20 }}>
         <Header />

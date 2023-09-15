@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import avatar from '../assets/avatar.png'
 import bellActive from '../assets/bell-active.png'
@@ -23,7 +23,6 @@ const Home = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
   const { contextCurrentUser, contextRole } = context
-  console.log(contextRole, 26)
 
   const Header = () => {
     return (
