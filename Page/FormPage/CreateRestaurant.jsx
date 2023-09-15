@@ -100,7 +100,9 @@ const CreateRestaurant = ({ navigation }) => {
               CreateRestaurantAPI(formValue)
               .then(data => {
                 if(data.success) {
-                  console.log(data.message)
+                  console.log('Create New Restaurant Successfully!')
+                  alert('You have created a New Restaurant.')
+                  navigation.navigate('ChefProfile')
                 }
               })
               .catch(err => console.log(err, 'here'))
