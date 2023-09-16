@@ -12,8 +12,8 @@ import AppStateContext from '../../hook/AppStateContext'
 
 const SignIn = ({ navigation }) => {
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('Testing1@gmail.com')
+  const [password, setPassword] = useState('11111')
   const [asChef, setAsChef] = useState(false)
   const context = useContext(AppStateContext)
   const { setContextCurrentUser, setContextRole } = context
