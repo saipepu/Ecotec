@@ -20,10 +20,6 @@ const FooterNav = ({ navigation, chef, profile }) => {
       icon: 'home-filled',
       link: 'Home'
     },
-    // {
-    //   icon: 'leaderboard',
-    //   link: ''
-    // },
     {
       icon: 'person',
       link: IsChef ? 'ChefProfile' : 'UserProfile'
@@ -31,6 +27,10 @@ const FooterNav = ({ navigation, chef, profile }) => {
     {
       icon: 'shopping-cart',
       link: 'Cart'
+    },
+    {
+      icon: 'shopping-bag',
+      link: 'Store'
     }
   ]
   
@@ -82,7 +82,7 @@ const FooterNav = ({ navigation, chef, profile }) => {
           </TouchableOpacity>
         </Modal>
         {link.map((item, i) => {
-          return contextRole == 'Chef' && item.link == 'Cart' ? "" : (
+          return contextRole == 'Chef' && (item.link == 'Cart' || item.link == 'Store') ? "" : (
             <TouchableOpacity key={i} style={{ width: 35, height: 35, borderRadius: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             onPress={() => {
               item.icon == 'person' ? setModalVisible(true) : item.link ? navigation.navigate(item.link) : ""

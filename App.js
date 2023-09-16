@@ -15,6 +15,7 @@ import UserProfile from './Page/UserProfile';
 import SignUp from './Page/FormPage/SignUp';
 import SignIn from './Page/FormPage/SignIn';
 import CreateRestaurant from './Page/FormPage/CreateRestaurant';
+import Store from './Page/Store';
 
 export default function App() {
 
@@ -71,6 +72,7 @@ export default function App() {
           <Stack.Screen name="CreateMenu" component={CreateMenu} />
           <Stack.Screen name="CreateRestaurant" component={CreateRestaurant} />
           <Stack.Screen name="UserProfile" component={UserProfile} />
+          <Stack.Screen name="Store" component={Store} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppStateContext.Provider>

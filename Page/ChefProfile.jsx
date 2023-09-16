@@ -16,7 +16,7 @@ const ChefProfile = ({ navigation }) => {
   const { contextCurrentUser } = context
 
   useEffect(() => {
-    getRestaurantByChefId(contextCurrentUser.id)
+    getRestaurantByChefId(contextCurrentUser?.id)
     .then(data => {
       if(data.success) {
         setRestaurant(data.message[0])
@@ -42,7 +42,7 @@ const ChefProfile = ({ navigation }) => {
               </View>
             </View>
             <View style={{ display: 'flex' }}>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>{contextCurrentUser.name}</Text>
+              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>{contextCurrentUser?.name}</Text>
               {/* <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20}}>
                 <Text style={{ fontSize: 16, color: color.black }}>20 Follwers</Text>
                 <Text style={{ fontSize: 16, color: color.black }}>10 Following</Text>
