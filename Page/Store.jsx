@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import color from '../theme/colors'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import FooterNav from '../components/FooterNav'
 import { getAllItem } from '../api/Item/getAllItem'
+import { CreateCustomerItem } from '../api/CustomerItem/CreateCustomerItem'
+import AppStateContext from '../hook/AppStateContext'
+import { UpdatePoints } from '../api/Customer/UpdatePoints'
 
 const Store = ({ navigation }) => {
 
   const [itemList, setItemList] = useState([])
+  const context = useContext(AppStateContext)
+  const { contextCurrentUser, setContextCurrentUser } = context
 
   useEffect(() => {
     getAllItem()
@@ -53,6 +58,52 @@ const Store = ({ navigation }) => {
 
   const ItemContainer = () => {
 
+    const handleBuyItem = (item) => {
+
+      console.log('Customer Buying an Item')
+      var customer_id = contextCurrentUser?.id
+      var formData = {
+        customer_id: customer_id,
+        item_id: item.id
+      }
+      var points = item?.cost
+      if(contextCurrentUser.points >= points) {
+        CreateCustomerItem(formData)
+        .then(data => {
+          if(data.success) {
+            alert('You bough an Item: ', item?.name)
+            console.log('Buy Item Failed')
+
+            var points = { points: -item?.cost }
+            var customer_id = contextCurrentUser?.id
+            var formData = {
+              customer_id: customer_id,
+              points: points
+            }
+            console.log(formData, 83)
+            UpdatePoints(formData)
+            .then(data => {
+              if(data.success) {
+                console.log(data, 86)
+                setContextCurrentUser({...contextCurrentUser, points: contextCurrentUser.points - item?.cost })
+              }
+            })
+            .catch(err => console.log(err, 90))
+
+          } else {
+            if(data.message.split(' ')[0] == 'duplicate') {
+              alert('Cannot buy an item twice!')
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err, 'Buy Item Failed')
+        })
+      } else {
+        alert('Not enought Points')
+      }
+    }
+
     const RenderItem = ({ item }) => {
       return (
         <TouchableOpacity
@@ -72,7 +123,7 @@ const Store = ({ navigation }) => {
             <View style={{ display: 'flex' }}>
               <TouchableOpacity
                   style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderRadius: 100, backgroundColor: color.primary, paddingHorizontal: 8, paddingVertical: 4, gap: 4}}
-                  onPress={() => {}}
+                  onPress={() => handleBuyItem(item)}
                 >
                   <Text style={{ fontSize: 12, color: 'white', fontWeight: '400' }}>Buy</Text>
               </TouchableOpacity>
