@@ -92,17 +92,17 @@ const Cart = ({ navigation }) => {
               console.log('update customer points')
               var points = { points: point }
               var customer_id = contextCurrentUser?.id
-              var myObj = {
+              var formData = {
                 customer_id: customer_id,
                 points: points
               }
-              UpdatePoints(myObj)
+              UpdatePoints(formData)
               .then(data => {
                 if(data?.success) {
                   console.log(data?.message, 102)
                   setContextCurrentUser(data?.message?.rows[0])
                 }
-                console.log(data, 10000000)
+                console.log(data, 105)
               })
               .catch(err => console.log(err, 'Customer points update failed!!!'))
               console.log(data.message, 'created all items')
