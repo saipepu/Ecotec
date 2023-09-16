@@ -17,15 +17,32 @@ import { GetOrderItemByOrderId } from '../api/OrderItem/GetOrderItemByOrderId'
 import { getAllMenu } from '../api/Menu/getAllMenu'
 import { DeleteOrderById } from '../api/Order/DeleteOrder'
 import { UpdatePoints } from '../api/Customer/UpdatePoints'
+import { getItemByCustomerId } from '../api/CustomerItem/getItemByCustomerId'
+import { getAllItem } from '../api/Item/getAllItem'
 
 const UserProfile = ({ navigation }) => {
 
   const context = useContext(AppStateContext)
   const { contextCurrentUser, setContextCurrentUser } = context
+  const [showItem, setShowItem] = useState(false)
   const [user, setUser] = useState()
+  const [itemList, setItemList] = useState([])
+  const [customerItemList, setCustomerItemList] = useState([])
   
   useEffect(() => {
     setUser(contextCurrentUser)
+    getItemByCustomerId(contextCurrentUser?.id)
+    .then(data => {
+      if(data.success) {
+        setCustomerItemList(data.message)
+      }
+    })
+    getAllItem()
+    .then(data => {
+      if(data.success) {
+        setItemList(data.message)
+      }
+    })
   }, [contextCurrentUser])
 
   const Header = () => {
@@ -45,7 +62,7 @@ const UserProfile = ({ navigation }) => {
               </View>
             </View>
             <View style={{ display: 'flex' }}>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 30}}>{user?.name}</Text>
+              <Text style={{ fontSize: 24, fontWeight: 600, lineHeight: 30}}>{user?.name}</Text>
             </View>
         </View>
         <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
@@ -145,40 +162,43 @@ const UserProfile = ({ navigation }) => {
       console.log('Deleting Order Id ', order?.id)
       var reducedPoints = -order?.total_points
 
-      DeleteOrderById(order?.id)
-      .then(data => {
-          if(data.success) {
-            // update customer points -> reduce
-            var points = { points: reducedPoints }
-            var customer_id = contextCurrentUser?.id
-            var myObj = {
-              customer_id: customer_id,
-              points: points
-            }
-            UpdatePoints(myObj)
-            .then(data => {
-              if(data.success) {
-                setContextCurrentUser({...contextCurrentUser, points: contextCurrentUser.points + reducedPoints })
+      if(contextCurrentUser.points + reducedPoints >= 0) {
+        DeleteOrderById(order?.id)
+        .then(data => {
+            if(data.success) {
+              // update customer points -> reduce
+              var points = { points: reducedPoints }
+              var customer_id = contextCurrentUser?.id
+              var formData = {
+                customer_id: customer_id,
+                points: points
               }
-            })
-            .catch(err => console.log(err))
-
-            // update order list UI
-            getOrderByCustomerId(user?.id)
-            .then(data => {
-              if(data.success) {
-                setOrderList(data.message)
-              }
-            })
-            .catch(err => console.log(err))
-
-          alert('Delete Order Successfully.', order_id)
-        } else {
-          alert('Deleting Order Failed!')
-          console.log('Deleting Order Failed!', data)
-        }
-      })
-      .catch(err => alert('Deleting Order Failed!', err))
+              UpdatePoints(formData)
+              .then(data => {
+                if(data.success) {
+                  setContextCurrentUser({...contextCurrentUser, points: contextCurrentUser.points + reducedPoints })
+                }
+              })
+              .catch(err => console.log(err))
+  
+              // update order list UI
+              getOrderByCustomerId(user?.id)
+              .then(data => {
+                if(data.success) {
+                  setOrderList(data.message)
+                }
+              })
+              .catch(err => console.log(err))
+  
+            alert('Delete Order Successfully.', order_id)
+          } else {
+            console.log('Deleting Order Failed!', data)
+          }
+        })
+        .catch(err => console.log(err, 198))
+      } else {
+        alert("Cannot delete order as you have already used up your points!")
+      }
     }
 
     const RenderItem = ({ cartItem, quantity }) => {
@@ -188,17 +208,19 @@ const UserProfile = ({ navigation }) => {
               <View style={{ width: 75, height: 75, overflow: 'hidden'}}>
                 <Image source={t_menu1} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
               </View>
-            <View style={{ maxWidth: '80%', gap: 4, flexWrap: 'wrap'}}>
+            <View style={{ flex: 1, maxWidth: '80%', gap: 4, flexWrap: 'wrap'}}>
               <Text style={{ maxWidth: '80%', fontSize: 16, fontWeight: 'bold', flexWrap: 'wrap' }}>{cartItem.name}</Text>
             </View>
-            <Text style={{ marginLeft: 'auto', fontSize: 16 }}>{cartItem.price} Baht</Text>
+            <View style={{ display: 'flex' }}>
+              <Text style={{ marginLeft: 'auto', fontSize: 16 }}>{cartItem.price} Baht</Text>
+              <Text style={{ marginLeft: 'auto', fontSize: 16 }}>{cartItem.points} Points</Text>
+            </View>
           </View>
         )
     }
 
     return (
       <View style={{ width: '100%', gap: 8}}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold'}}>Order Lists</Text>
         {orderList && orderList?.map((order, i) => {
           return (
             <View key={i} style={{ width: '100%', display: 'flex' }}>
@@ -211,7 +233,7 @@ const UserProfile = ({ navigation }) => {
                   <Text style={{ fontSize: 16 }}>{convertTimeForamt(order.created_at)}</Text>
                 </View>
                 <TouchableOpacity onPress={() => handleDeleteOrder(order)}>
-                  <Icon name={'delete'} size="18" color="gray" style={{ width: 18, height: 18 }} />
+                  <Icon name={'delete'} size={18} color="gray" style={{ width: 18, height: 18 }} />
                 </TouchableOpacity>
               </TouchableOpacity>
               {selectOrder == order.id ? (
@@ -237,6 +259,42 @@ const UserProfile = ({ navigation }) => {
     )
   }
 
+  const ItemContainer = () => {
+
+    const RenderItem = ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{ width: '100%', display: 'flex', backgroundColor: 'white', borderRadius: 12, overflow: 'hidden', shadowColor: '#00000050', shadowOffset: {width: 0, height: 10}, shadowOpacity: 1, shadowRadius: 10 }}
+          onPress={() => {}}>
+          <View style={{ width: '100%', height: 120, display: 'flex' }}>
+            <Image source={{ uri: item?.image }} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
+          </View>
+          <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12}}>
+            <View style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <Text style={{ fontSize: 16, fontWeight: '600' }}>{item?.name}</Text>
+              <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                <Icon size={14} name="star" color={color.primary}/>
+                <Text style={{ fontSize: 10, color: color.black }}>{item?.cost}</Text>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )
+    }
+
+    return (
+      <View style={{ width: '100%', display: 'flex', gap: 12}}>
+        <View>
+        </View>
+        {itemList?.map((item, i) => 
+          customerItemList?.map((citem, i) => citem.item_id == item.id ? (
+              <RenderItem item={item} key={i} />
+          ) : ( <></> ) )
+        )}
+      </View>
+    )
+  }
+
   return (
     <View style={{ width: '100%', height: '100%'}}>
       <ScrollView
@@ -249,7 +307,20 @@ const UserProfile = ({ navigation }) => {
 
           <View style={{ width: '100%', height: 0.5, backgroundColor: '#cbcbcb' }}></View>
 
-          <OrderList />
+          <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 4, borderRadius: 5, gap: 12, backgroundColor: '#eeeeee'}}>
+            <TouchableOpacity 
+              onPress={() => setShowItem(false)}
+              style={{ flex: 1, backgroundColor: showItem ? '#eeeeee': 'white', paddingVertical: 4, borderRadius: 5, overflow: 'hidden' }}><Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Order List</Text></TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setShowItem(true)}
+              style={{ flex: 1, backgroundColor: showItem ? 'white': '#eeeeee', paddingVertical: 4, borderRadius: 5, overflow: 'hidden' }}><Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Item List</Text></TouchableOpacity>
+          </View>
+
+          {showItem ? (
+              <ItemContainer />
+            ) : (
+              <OrderList />
+          )}
 
       </ScrollView>
       <FooterNav navigation={navigation} profile={true} />
