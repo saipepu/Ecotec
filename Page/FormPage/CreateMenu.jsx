@@ -42,6 +42,10 @@ const CreateMenu = ({ navigation }) => {
         .then(data => {
           if(data.success) {
             console.log(data.message)
+            if(data.message.length == []) {
+              alert('You need to create a Restaurant First')
+              navigation.navigate('ChefProfile')
+            }
             setRestaurant(data.message[0])
           }
         })
@@ -138,10 +142,13 @@ const CreateMenu = ({ navigation }) => {
               console.log(formValue)
               CreateMenuAPI(formValue)
               .then(data => {
+                console.log(data)
                 if(data.success) {
                   console.log('Create New Menu Successfully!')
                   alert('You have created a New Menu.')
                   navigation.navigate('ChefProfile')
+                } else {
+                  alert('Menu Creating Failed!')
                 }
               })
               .catch(err => console.log(err))
